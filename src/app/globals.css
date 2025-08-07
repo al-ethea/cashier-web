@@ -1,13 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-<<<<<<< ours
-/* @custom-variant dark (&:is(.dark *)); */
-=======
 @custom-variant dark (&:is(.dark *));
->>>>>>> theirs
-
-
 
 @media (prefers-color-scheme: dark) {
   html {
@@ -130,4 +124,3 @@
     @apply bg-background text-foreground;
   }
 }
->>>>>>> theirs
