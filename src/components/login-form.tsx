@@ -14,7 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { authValidationSchema } from "@/features/auth/schemas/authValidationSchema";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
-import useAuthLogin from "@/features/auth/hooks/handleAuthLogin";
+import useAuthLogin from "@/features/auth/hooks/useAuthLogin";
 
 export function LoginForm({
   className,
