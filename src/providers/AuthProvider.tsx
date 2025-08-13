@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const token = authStore((state: any) => state.token);
+  console.log(token);
   const setAuth = authStore((state: any) => state.setAuth);
   const router = useRouter();
   const pathName = usePathname();
@@ -23,16 +24,18 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       console.log(response);
 
       setAuth({
-        _token: response.data.data.token,
-        _email: response.data.data.email,
-        _shift: response.data.data.shift,
+        token: response.data.data.token,
+        email: response.data.data.email,
+        shift: response.data.data.shift,
       });
       setIsHandleSessionLoginDone(true);
+      console.log("Session Login Success");
     } catch (error) {
+      console.log("Session Login Failed");
       setAuth({
-        _token: null,
-        _email: null,
-        _shift: null,
+        token: null,
+        email: null,
+        shift: null,
       });
       setIsHandleSessionLoginDone(true);
     }

@@ -24,12 +24,13 @@ export default function useAuthLogin() {
         email,
         password,
       });
+      console.log(response.data)
 
       toast.success(response.data.message);
       setAuth({
         token: response.data.data.token,
         email: response.data.data.email,
-        id: response.data.data.cashierId,
+        // id: response.data.data.cashierId, mau pake id atau nggak?
         shift: response.data.data.shift,
       });
 
