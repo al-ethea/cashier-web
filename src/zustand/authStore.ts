@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 interface IAuthStore {
   _token: string | null;
   _email: string | null;
-  _role: string | null;
+  _shift: string | null;
 }
 
 // Persistance  : Untuk Menyimpan ke Local Storage / Cookies & Partialize : Untuk Mengambil Sebagian Data di Global State untuk di Simpan ke Local Storage / Cookies
@@ -14,10 +14,10 @@ const authStore = create(
     (set) => ({
       token: null,
       email: null,
-      role: null,
+      shift: null,
 
-      setAuth: ({ _token, _email, _role }: IAuthStore) => {
-        return set(() => ({ token: _token, email: _email, role: _role }));
+      setAuth: ({ _token, _email, _shift }: IAuthStore) => {
+        return set(() => ({ token: _token, email: _email, shift: _shift }));
       },
     }),
     {

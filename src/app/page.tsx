@@ -1,4 +1,5 @@
 // pages/index.tsx
+"use client";
 import Link from "next/link";
 import { useCashierDashboardNavItems } from "@/features/cashier/hooks/useCashierDashboardNavItems";
 

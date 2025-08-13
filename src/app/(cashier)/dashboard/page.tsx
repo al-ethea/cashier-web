@@ -1,4 +1,5 @@
 // pages/index.tsx
+"use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCashierDashboardNavItems } from "@/features/cashier/hooks/useCashierDashboardNavItems";

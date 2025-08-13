@@ -12,7 +12,6 @@ interface IHandleAuthLoginProps {
 
 export default function useAuthLogin() {
   const [showPassword, setShowPassword] = useState(false);
-
   const router = useRouter();
   const setAuth = authStore((state) => state.setAuth);
 
@@ -21,7 +20,7 @@ export default function useAuthLogin() {
     password,
   }: IHandleAuthLoginProps) => {
     try {
-      const response = await apiInstance.post("/auth/cashier/login", {
+      const response = await apiInstance.post("/auth/cashier-login", {
         email,
         password,
       });
@@ -30,11 +29,11 @@ export default function useAuthLogin() {
       setAuth({
         token: response.data.data.token,
         email: response.data.data.email,
-        id: response.data.data.userId,
-        role: null,
+        id: response.data.data.cashierId,
+        shift: response.data.data.shift,
       });
 
-      router.push("/");
+      router.push("/dashboard");
     } catch (error) {
       const errResponse = error as AxiosError<{ message: string }>;
       if (errResponse) {
