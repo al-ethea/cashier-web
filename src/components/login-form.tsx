@@ -20,8 +20,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [showPassword, setShowPassword] = useState(false);
-  const { handleAuthLogin } = useAuthLogin();
+  // const [] = useState(false);
+  const { handleAuthLogin, showPassword, setShowPassword } = useAuthLogin();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>

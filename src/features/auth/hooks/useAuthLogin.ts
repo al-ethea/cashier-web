@@ -3,6 +3,7 @@ import apiInstance from "@/utils/api/apiInstance";
 import { useRouter } from "next/navigation";
 import authStore from "@/zustand/authStore";
 import { AxiosError } from "axios";
+import { useState } from "react";
 
 interface IHandleAuthLoginProps {
   email: string;
@@ -10,7 +11,7 @@ interface IHandleAuthLoginProps {
 }
 
 export default function useAuthLogin() {
-  // const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
   const setAuth = authStore((state) => state.setAuth);
@@ -20,7 +21,7 @@ export default function useAuthLogin() {
     password,
   }: IHandleAuthLoginProps) => {
     try {
-      const response = await apiInstance.post("/user/login", {
+      const response = await apiInstance.post("/auth/cashier/login", {
         email,
         password,
       });
@@ -57,5 +58,7 @@ export default function useAuthLogin() {
 
   return {
     handleAuthLogin,
+    showPassword,
+    setShowPassword,
   };
 }
