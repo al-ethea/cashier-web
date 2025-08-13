@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCashierDashboardNavItems } from "@/features/cashier/hooks/useCashierDashboardNavItems";
-import apiInstance from "@/utils/api/apiInstance"; // your axios/fetch instance
+import apiInstance from "@/utils/api/apiInstance";
+import authStore from "@/zustand/authStore";
 
 interface ShiftData {
   cashierName: string;
@@ -16,11 +17,16 @@ export default function CashierDashboard() {
   const navItems = useCashierDashboardNavItems();
   const [shiftData, setShiftData] = useState<ShiftData | null>(null);
   const [loading, setLoading] = useState(true);
+  const token = authStore((state) => state.token);
 
   useEffect(() => {
     const fetchShift = async () => {
       try {
-        const res = await apiInstance.get("/cashier/display-shift");
+        const res = await apiInstance.get("/cashier/display-shift", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setShiftData(res.data.data);
       } catch (error) {
         console.error("Error fetching shift:", error);
