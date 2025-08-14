@@ -7,43 +7,38 @@ import { useState } from "react";
 import apiInstance from "@/utils/api/apiInstance";
 
 export default function CashierDashboard() {
-  const { navItems, shiftData, loading } = useCashierDashboard();
-  const token = authStore((state: any) => state.token);
+  const {
+    navItems,
+    shiftData,
+    loading,
+    openClockInModal,
+    closeClockInModal,
+    handleClockIn,
+    startingCash,
+    setStartingCash,
+    isSubmitting,
+  } = useCashierDashboard();
 
-  const [isClockingIn, setIsClockingIn] = useState(false);
-  const [startingCash, setStartingCash] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [isClockingIn, setIsClockingIn] = useState(false);
+  // const handleClockIn = async () => {
+  //   try {
+  //     setIsSubmitting(true);
+  //     await apiInstance.post(
+  //       "/cashier/clock-in",
+  //       { startingCash: Number(startingCash) },
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     closeClockInModal();
+  //     setStartingCash("");
+  //   } catch (error) {
+  //     console.error("Clock in failed", error);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
 
-  const openClockInModal = () => {
-    const modal = document.getElementById(
-      "clock_in_modal"
-    ) as HTMLDialogElement;
-    modal?.showModal();
-  };
+  console.log("shiftData", shiftData);
 
-  const closeClockInModal = () => {
-    const modal = document.getElementById(
-      "clock_in_modal"
-    ) as HTMLDialogElement;
-    modal?.close();
-  };
-
-  const handleClockIn = async () => {
-    try {
-      setIsSubmitting(true);
-      await apiInstance.post(
-        "/cashier/clock-in",
-        { startingCash: Number(startingCash) },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      closeClockInModal();
-      setStartingCash("");
-    } catch (error) {
-      console.error("Clock in failed", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
@@ -87,21 +82,22 @@ export default function CashierDashboard() {
               {/* Clock In/Out Buttons */}
               <div className="flex space-x-4 mt-3">
                 <button
-                  // onClick={openClockInModal}
-                  disabled={!!shiftData?.startTime && !shiftData?.endTime} // already clocked in
+                  onClick={openClockInModal}
+                  disabled={!shiftData?.clockOutDone}
                   className={`px-4 py-2 rounded-lg transition ${
-                    shiftData?.startTime && !shiftData?.endTime
+                    !shiftData?.clockOutDone
                       ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                       : "bg-green-500 text-white hover:bg-green-600"
                   }`}
                 >
                   Clock In
                 </button>
+
                 <button
                   // onClick={handleClockOut}
-                  disabled={!shiftData?.startTime || !!shiftData?.endTime} // no active shift
+                  disabled={shiftData?.clockOutDone} // no active shift
                   className={`px-4 py-2 rounded-lg transition ${
-                    !shiftData?.startTime || shiftData?.endTime
+                    shiftData?.clockOutDone
                       ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                       : "bg-red-500 text-white hover:bg-red-600"
                   }`}
@@ -118,7 +114,7 @@ export default function CashierDashboard() {
 
       {/* Clock In Modal */}
       <dialog id="clock_in_modal" className="modal">
-        <div className="modal-box bg-white text-black rounded-lg w-fit">
+        <div className="modal-box bg-white text-black rounded-lg w-fit mx-auto my-auto">
           <p className="text-center mb-4">Enter your starting cash</p>
           <input
             type="number"
@@ -131,6 +127,7 @@ export default function CashierDashboard() {
             <form method="dialog">
               <button
                 className="btn w-28 border-gray-400 bg-white text-gray-700 shadow-none rounded-lg text-lg"
+                onClick={closeClockInModal}
                 disabled={isSubmitting}
               >
                 Cancel
