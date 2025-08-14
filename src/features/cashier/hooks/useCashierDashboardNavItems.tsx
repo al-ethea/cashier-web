@@ -6,7 +6,6 @@ export interface NavItem {
 export const useCashierDashboardNavItems = (): NavItem[] => {
   return [
     { name: "Dashboard", path: "/" },
-    { name: "Shift", path: "/shift" },
     { name: "Product Stock", path: "/product-stock" },
     { name: "Cart", path: "/cart" },
     { name: "History", path: "/history" },

@@ -1,79 +1,151 @@
 // pages/index.tsx
 "use client";
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useCashierDashboardNavItems } from "@/features/cashier/hooks/useCashierDashboardNavItems";
-import apiInstance from "@/utils/api/apiInstance";
+import useCashierDashboard from "@/features/cashier/hooks/useCashierDashboard";
 import authStore from "@/zustand/authStore";
-
-interface ShiftData {
-  cashierName: string;
-  shift: string;
-  startTime: string;
-  endTime: string;
-}
+import { useState } from "react";
+import apiInstance from "@/utils/api/apiInstance";
 
 export default function CashierDashboard() {
-  const navItems = useCashierDashboardNavItems();
-  const [shiftData, setShiftData] = useState<ShiftData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const token = authStore((state) => state.token);
+  const { navItems, shiftData, loading } = useCashierDashboard();
+  const token = authStore((state: any) => state.token);
 
-  useEffect(() => {
-    const fetchShift = async () => {
-      try {
-        const res = await apiInstance.get("/cashier/display-shift", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setShiftData(res.data.data);
-      } catch (error) {
-        console.error("Error fetching shift:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [isClockingIn, setIsClockingIn] = useState(false);
+  const [startingCash, setStartingCash] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    fetchShift();
-  }, []);
+  const openClockInModal = () => {
+    const modal = document.getElementById(
+      "clock_in_modal"
+    ) as HTMLDialogElement;
+    modal?.showModal();
+  };
 
+  const closeClockInModal = () => {
+    const modal = document.getElementById(
+      "clock_in_modal"
+    ) as HTMLDialogElement;
+    modal?.close();
+  };
+
+  const handleClockIn = async () => {
+    try {
+      setIsSubmitting(true);
+      await apiInstance.post(
+        "/cashier/clock-in",
+        { startingCash: Number(startingCash) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      closeClockInModal();
+      setStartingCash("");
+    } catch (error) {
+      console.error("Clock in failed", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-64 bg-[#00af81] text-white p-6">
-        <div className="text-2xl font-bold mb-8">Kasir Pintar</div>
-
-        {/* Navigation */}
+      <aside className="w-64 bg-[#00af81] text-white p-6 flex flex-col">
+        <div className="text-2xl font-bold mb-10">Kasir Pintar</div>
         <nav className="flex flex-col space-y-2">
           {navItems.map((item) => (
             <Link href={item.path} key={item.name}>
-              <div className="px-4 py-2 rounded hover:bg-[#66cbb0] hover:bg-opacity-20 cursor-pointer transition">
+              <div className="px-4 py-2 rounded-lg hover:bg-[#66cbb0] hover:bg-opacity-30 cursor-pointer transition">
                 {item.name}
               </div>
             </Link>
           ))}
         </nav>
-      </div>
+      </aside>
 
       {/* Main content */}
-      <div className="flex-1 p-10">
-        <h2 className="text-3xl font-semibold mb-4">Welcome</h2>
+      <main className="flex-1 p-10">
         {loading ? (
-          <p>Loading shift...</p>
+          <p className="text-gray-500">Loading shift...</p>
         ) : shiftData ? (
-          <div className="p-4 bg-gray-100 rounded shadow-md">
-            <p className="text-lg font-medium">
-              {shiftData.cashierName} — {shiftData.shift}
+          <div>
+            {/* Welcome Message */}
+            <h2 className="text-3xl font-semibold text-gray-800 mb-2">
+              Welcome,{" "}
+              <span className="text-[#00af81]">{shiftData.cashierName}</span>
+            </h2>
+            <p className="text-lg text-gray-600 mb-6">
+              Here’s your current shift details:
             </p>
-            <p className="text-gray-700">
-              {shiftData.startTime} - {shiftData.endTime}
-            </p>
+
+            {/* Shift Card */}
+            <div className="bg-white shadow-md rounded-xl p-6 border border-gray-100">
+              <p className="text-xl font-medium text-gray-800 mb-2">
+                Shift: <span className="text-[#00af81]">{shiftData.shift}</span>
+              </p>
+              <p className="text-gray-600">
+                {shiftData.startTime} - {shiftData.endTime}
+              </p>
+
+              {/* Clock In/Out Buttons */}
+              <div className="flex space-x-4 mt-3">
+                <button
+                  // onClick={openClockInModal}
+                  disabled={!!shiftData?.startTime && !shiftData?.endTime} // already clocked in
+                  className={`px-4 py-2 rounded-lg transition ${
+                    shiftData?.startTime && !shiftData?.endTime
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "bg-green-500 text-white hover:bg-green-600"
+                  }`}
+                >
+                  Clock In
+                </button>
+                <button
+                  // onClick={handleClockOut}
+                  disabled={!shiftData?.startTime || !!shiftData?.endTime} // no active shift
+                  className={`px-4 py-2 rounded-lg transition ${
+                    !shiftData?.startTime || shiftData?.endTime
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "bg-red-500 text-white hover:bg-red-600"
+                  }`}
+                >
+                  Clock Out
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
-          <p>No shift information available.</p>
+          <p className="text-gray-500">No shift information available.</p>
         )}
-      </div>
+      </main>
+
+      {/* Clock In Modal */}
+      <dialog id="clock_in_modal" className="modal">
+        <div className="modal-box bg-white text-black rounded-lg w-fit">
+          <p className="text-center mb-4">Enter your starting cash</p>
+          <input
+            type="number"
+            className="input input-bordered w-full text-black mb-4"
+            placeholder="Starting Cash"
+            value={startingCash}
+            onChange={(e) => setStartingCash(e.target.value)}
+          />
+          <div className="modal-action flex justify-center gap-x-4">
+            <form method="dialog">
+              <button
+                className="btn w-28 border-gray-400 bg-white text-gray-700 shadow-none rounded-lg text-lg"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+            </form>
+            <button
+              className="btn w-28 shadow-none rounded-lg text-lg bg-green-600 border-green-600 text-white"
+              onClick={handleClockIn}
+              disabled={isSubmitting || !startingCash}
+            >
+              {isSubmitting ? "Clocking In..." : "Confirm"}
+            </button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 }
