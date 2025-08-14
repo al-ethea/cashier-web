@@ -17,6 +17,11 @@ export default function CashierDashboard() {
     startingCash,
     setStartingCash,
     isSubmitting,
+    handleClockOut,
+    openClockOutModal,
+    closeClockOutModal,
+    endingCash,
+    setEndingCash,
   } = useCashierDashboard();
 
   // const [isClockingIn, setIsClockingIn] = useState(false);
@@ -94,7 +99,7 @@ export default function CashierDashboard() {
                 </button>
 
                 <button
-                  // onClick={handleClockOut}
+                  onClick={openClockInModal}
                   disabled={shiftData?.clockOutDone} // no active shift
                   className={`px-4 py-2 rounded-lg transition ${
                     shiftData?.clockOutDone
@@ -139,6 +144,37 @@ export default function CashierDashboard() {
               disabled={isSubmitting || !startingCash}
             >
               {isSubmitting ? "Clocking In..." : "Confirm"}
+            </button>
+          </div>
+        </div>
+      </dialog>
+      {/* Clock Out Modal */}
+      <dialog id="clock_out_modal" className="modal">
+        <div className="modal-box bg-white text-black rounded-lg w-fit mx-auto my-auto">
+          <p className="text-center mb-4">Enter your ending cash</p>
+          <input
+            type="number"
+            className="input input-bordered w-full text-black mb-4"
+            placeholder="Ending Cash"
+            value={endingCash}
+            onChange={(e) => setEndingCash(e.target.value)}
+          />
+          <div className="modal-action flex justify-center gap-x-4">
+            <form method="dialog">
+              <button
+                className="btn w-28 border-gray-400 bg-white text-gray-700 shadow-none rounded-lg text-lg"
+                onClick={closeClockOutModal}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+            </form>
+            <button
+              className="btn w-28 shadow-none rounded-lg text-lg bg-red-600 border-red-600 text-white"
+              onClick={handleClockOut}
+              disabled={isSubmitting || !endingCash}
+            >
+              {isSubmitting ? "Clocking Out..." : "Confirm"}
             </button>
           </div>
         </div>

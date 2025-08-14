@@ -1,5 +1,6 @@
 import { AppSidebar } from '@/components/app-sidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SiteHeader } from '@/components/site-header';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 
 export default function AdminLayout({children}: Readonly<{children: React.ReactNode}>) {
@@ -12,7 +13,13 @@ export default function AdminLayout({children}: Readonly<{children: React.ReactN
         } as React.CSSProperties
       }>
       <AppSidebar variant='inset' />
+      <SidebarInset>
+        <SiteHeader />
+        <div className='md:p-4'>
+
       {children}
+        </div>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

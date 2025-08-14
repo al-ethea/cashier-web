@@ -122,5 +122,10 @@ export default function useCashierDashboard() {
     setStartingCash,
     isSubmitting,
     handleClockIn,
+    endingCash,
+    setEndingCash,
+    openClockOutModal,
+    closeClockOutModal,
+    handleClockOut,
   };
 }
