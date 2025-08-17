@@ -22,6 +22,7 @@ export default function CashierDashboard() {
     closeClockOutModal,
     endingCash,
     setEndingCash,
+    isSubmittingClockOut,
   } = useCashierDashboard();
 
   // const [isClockingIn, setIsClockingIn] = useState(false);
@@ -47,7 +48,7 @@ export default function CashierDashboard() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#00af81] text-white p-6 flex flex-col">
+      {/* <aside className="w-64 bg-[#00af81] text-white p-6 flex flex-col">
         <div className="text-2xl font-bold mb-10">Kasir Pintar</div>
         <nav className="flex flex-col space-y-2">
           {navItems.map((item) => (
@@ -58,7 +59,7 @@ export default function CashierDashboard() {
             </Link>
           ))}
         </nav>
-      </aside>
+      </aside> */}
 
       {/* Main content */}
       <main className="flex-1 p-10">
@@ -99,7 +100,7 @@ export default function CashierDashboard() {
                 </button>
 
                 <button
-                  onClick={openClockInModal}
+                  onClick={openClockOutModal}
                   disabled={shiftData?.clockOutDone} // no active shift
                   className={`px-4 py-2 rounded-lg transition ${
                     shiftData?.clockOutDone
@@ -148,6 +149,7 @@ export default function CashierDashboard() {
           </div>
         </div>
       </dialog>
+
       {/* Clock Out Modal */}
       <dialog id="clock_out_modal" className="modal">
         <div className="modal-box bg-white text-black rounded-lg w-fit mx-auto my-auto">
@@ -164,7 +166,7 @@ export default function CashierDashboard() {
               <button
                 className="btn w-28 border-gray-400 bg-white text-gray-700 shadow-none rounded-lg text-lg"
                 onClick={closeClockOutModal}
-                disabled={isSubmitting}
+                disabled={isSubmittingClockOut}
               >
                 Cancel
               </button>
@@ -172,9 +174,9 @@ export default function CashierDashboard() {
             <button
               className="btn w-28 shadow-none rounded-lg text-lg bg-red-600 border-red-600 text-white"
               onClick={handleClockOut}
-              disabled={isSubmitting || !endingCash}
+              disabled={isSubmittingClockOut || !endingCash}
             >
-              {isSubmitting ? "Clocking Out..." : "Confirm"}
+              {isSubmittingClockOut ? "Clocking Out..." : "Confirm"}
             </button>
           </div>
         </div>

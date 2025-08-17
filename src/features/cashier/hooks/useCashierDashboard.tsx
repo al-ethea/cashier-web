@@ -22,6 +22,7 @@ export default function useCashierDashboard() {
   const [startingCash, setStartingCash] = useState("");
   const [endingCash, setEndingCash] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingClockOut, setIsSubmittingClockOut] = useState(false);
 
   const openClockInModal = () => {
     const modal = document.getElementById(
@@ -39,14 +40,14 @@ export default function useCashierDashboard() {
 
   const openClockOutModal = () => {
     const modal = document.getElementById(
-      "clock_in_modal"
+      "clock_out_modal"
     ) as HTMLDialogElement;
     modal?.showModal();
   };
 
   const closeClockOutModal = () => {
     const modal = document.getElementById(
-      "clock_in_modal"
+      "clock_out_modal"
     ) as HTMLDialogElement;
     modal?.close();
   };
@@ -55,7 +56,7 @@ export default function useCashierDashboard() {
     try {
       setIsSubmitting(true);
       await apiInstance.post(
-        "/cashier/clockIn",
+        "/shift/clockIn",
         { startingCash: Number(startingCash) },
         {
           headers: {
@@ -75,9 +76,9 @@ export default function useCashierDashboard() {
 
   const handleClockOut = async () => {
     try {
-      setIsSubmitting(true);
+      setIsSubmittingClockOut(true);
       await apiInstance.post(
-        "/cashier/clockOut",
+        "/shift/clockOut",
         {
           endingCash: Number(endingCash),
         },
@@ -89,14 +90,14 @@ export default function useCashierDashboard() {
     } catch (error) {
       toast.error("Failed to clock out");
     } finally {
-      setIsSubmitting(false);
+      setIsSubmittingClockOut(false);
     }
   };
 
   useEffect(() => {
     const fetchShift = async () => {
       try {
-        const res = await apiInstance.get("/cashier/display-shift", {
+        const res = await apiInstance.get("/shift/display", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -127,5 +128,6 @@ export default function useCashierDashboard() {
     openClockOutModal,
     closeClockOutModal,
     handleClockOut,
+    isSubmittingClockOut,
   };
 }
