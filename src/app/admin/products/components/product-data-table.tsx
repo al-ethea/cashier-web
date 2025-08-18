@@ -10,17 +10,20 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { DataTablePagination } from './data-table-pagination';
+import { DataTablePagination } from './product-data-table-pagination';
 import { Input } from '@/components/ui/input';
 import { AddProductModal } from './add-product-modal';
+import { on } from 'events';
 
 
 interface IProductDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onRefresh?: () => void
+  onDelete?:(id:string,password?:string)=>void
 }
 
-export function ProductDataTable<TData, TValue>({ columns, data }: IProductDataTableProps<TData, TValue>) {
+export function ProductDataTable<TData, TValue>({ columns, data, onRefresh, onDelete }: IProductDataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const productTable = useReactTable({
@@ -51,7 +54,7 @@ export function ProductDataTable<TData, TValue>({ columns, data }: IProductDataT
 
         </div>
         <div className='flex flex-wrap items-center mt-2 gap-2 md:flex-row'>
-          <AddProductModal />
+          <AddProductModal onRefresh={onRefresh}/>
         </div>
       </div>
       <div className='overflow-hidden rounded-md border'>

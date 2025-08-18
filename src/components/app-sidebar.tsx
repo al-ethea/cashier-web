@@ -53,18 +53,13 @@ const data = {
       icon: IconBubbleTea,
     },
     {
-      title: 'Stocks',
-      url: '#',
-      icon: IconBlocks,
-    },
-    {
       title: 'Cashiers',
-      url: '#',
+      url: '/admin/cashiers',
       icon: IconUserDollar,
     },
     {
       title: 'Reports',
-      url: '#',
+      url: '/admin/reports',
       icon: IconReport,
     },
   ],
@@ -172,7 +167,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

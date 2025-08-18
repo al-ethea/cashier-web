@@ -13,21 +13,14 @@ import ProductImageUpload from './product-image-upload';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CloudinaryUploadWidgetResults } from 'next-cloudinary';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import apiInstance from '@/utils/api/apiInstance';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
+import { IProduct } from '@/types/product.type';
+import useAdminProducts from '@/features/admin/products/useAdminProducts';
 import { on } from 'events';
 
-const addProductFormSchema = z.object({
+const editProductFormSchema = z.object({
   name: z.string().min(2, { message: 'Product name must be at least 2 characters.' }),
   price: z.number(),
   productCategoryId: z.number(),
@@ -36,15 +29,16 @@ const addProductFormSchema = z.object({
   cldPublicId: z.string().optional(),
 });
 
-interface AddProductFormProps {
+interface EditProductFormProps {
+  id: string;
   onSuccess?: () => void;
-  onClickUpload?: () => void;
   onImageUploadSuccess?: (result: CloudinaryUploadWidgetResults) => void;
   initialImageData?: CloudinaryUploadWidgetResults | null;
-  onRefresh?: () => void;
+  product?: IProduct | null
+  onRefresh?: () => void
 }
 
-export function AddProductForm({ onSuccess, onClickUpload, onImageUploadSuccess, initialImageData, onRefresh }: AddProductFormProps) {
+export function EditProductForm({ onSuccess, onImageUploadSuccess, initialImageData, id, product, onRefresh }: EditProductFormProps) {
   const [imageUploaded, setImageUploaded] = React.useState({
     productImgUrl: (initialImageData?.info && typeof initialImageData.info === 'object' && 'secure_url' in initialImageData.info) ? initialImageData.info.secure_url : '',
     cldPublicId: (initialImageData?.info && typeof initialImageData.info === 'object' && 'public_id' in initialImageData.info) ? initialImageData.info.public_id : '',
@@ -59,22 +53,10 @@ export function AddProductForm({ onSuccess, onClickUpload, onImageUploadSuccess,
     onImageUploadSuccess?.(result);
   };
 
-  const [categories, setCategories] = React.useState([]);
-  const fetchCategories = async () => {
-    try {
-      const response = await apiInstance.get('/products/categories');
-      console.log(response.data.categories);
-      setCategories(response.data.categories);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useEffect(() => {
-    fetchCategories();
-  }, []);
+  const {categories} = useAdminProducts();
 
-  const form = useForm<z.infer<typeof addProductFormSchema>>({
-    resolver: zodResolver(addProductFormSchema),
+  const form = useForm<z.infer<typeof editProductFormSchema>>({
+    resolver: zodResolver(editProductFormSchema),
     defaultValues: {
       name: '',
       price: 0,
@@ -83,6 +65,19 @@ export function AddProductForm({ onSuccess, onClickUpload, onImageUploadSuccess,
     },
   });
 
+  React.useEffect(() => {
+    if (product) {
+      form.setValue('name', product.name);
+      form.setValue('price', product.price);
+      form.setValue('productCategoryId', Number(product.productCategoryId));
+      form.setValue('description', product.description);
+      setImageUploaded({
+        productImgUrl: product.productImgUrl,
+        cldPublicId: product.cldPublicId
+      })
+    }
+  }, [product]);
+
   const formFields = [
     { name: 'name' as const, label: 'Product Name', placeholder: 'Enter product name', type: 'text' },
     { name: 'price' as const, label: 'Price', placeholder: '0', type: 'number' },
@@ -90,14 +85,14 @@ export function AddProductForm({ onSuccess, onClickUpload, onImageUploadSuccess,
     { name: 'description' as const, label: 'Description', placeholder: 'Enter product description', type: 'textarea' },
   ];
 
-  async function onSubmit(values: z.infer<typeof addProductFormSchema>) {
+  async function onSubmit(values: z.infer<typeof editProductFormSchema>) {
     try {
       const submitData = {
         ...values,
         productImgUrl: imageUploaded.productImgUrl,
         cldPublicId: imageUploaded.cldPublicId,
       };
-      const response = await apiInstance.post('/products/create', submitData);
+      const response = await apiInstance.put('/products/update/'+id, submitData);
       onRefresh?.()
       toast.success(response.data.message);
       onSuccess?.();
@@ -132,10 +127,8 @@ export function AddProductForm({ onSuccess, onClickUpload, onImageUploadSuccess,
                     <Textarea placeholder={fieldConfig.placeholder} {...field} />
                   ) : fieldConfig.type === 'select' ? (
                     <select
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(+e.target.value);
-                        }}
+                      {...field}
+                      onChange={(e) => field.onChange(+e.target.value)}
                       className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
                     >
                       <option value=''>Select Product Category</option>
@@ -159,7 +152,7 @@ export function AddProductForm({ onSuccess, onClickUpload, onImageUploadSuccess,
             )}
           />
         ))}
-        <Button type='submit'>Add Product</Button>
+        <Button type='submit'>Update Product Data</Button>
       </form>
     </Form>
   );

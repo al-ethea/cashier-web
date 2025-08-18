@@ -4,15 +4,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { IProduct } from '@/types/product.type';
 import { ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
+import { EditCashierModal } from '../../cashiers/components/edit-cashier-modal';
+import { EditProductModal } from './edit-product-modal';
+import DeleteModal from '@/components/delete-modal';
 
-export interface IProductTable extends IProduct {
-  productCategory: {
-    id: number;
-    name: string;
-  };
-}
 
-export const productColumns: ColumnDef<IProductTable>[] = [
+export const productColumns=(onRefresh?: () => void, onDelete?:(id:string,password?:string)=>void): ColumnDef<IProduct>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -80,8 +77,14 @@ export const productColumns: ColumnDef<IProductTable>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex gap-2'>
-          <button className='px-2 py-1 bg-blue-500 text-white rounded'>Edit</button>
-          <button className='px-2 py-1 bg-red-500 text-white rounded'>Delete</button>
+          <EditProductModal id={row.original.id} onRefresh={onRefresh} />
+          <DeleteModal
+                      id={row.original.id}
+                      deleteContext='Product'
+                      className='px-2 py-1 flex items-center gap-1 bg-red-500 text-white rounded-sm'
+                      onDelete={(password?: string)=> onDelete?.(row.original.id, password)}
+                      onRefresh={onRefresh}
+                    />
         </div>
       );
     },

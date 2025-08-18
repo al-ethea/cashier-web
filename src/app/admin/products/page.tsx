@@ -1,10 +1,10 @@
 'use client';
 import useAdminProducts from '@/features/admin/products/useAdminProducts';
-import { productColumns, IProductTable } from './components/columns';
-import { ProductDataTable } from './components/data-table';
+import { productColumns } from './components/product-columns';
+import { ProductDataTable } from './components/product-data-table';
 
 export default function ProductsPage() {
- const { allProducts: data } = useAdminProducts();
+  const { allProducts: data, fetchAllProducts, handleDeleteProduct } = useAdminProducts();
 
   return (
     <div className='h-full flex-1 flex-col gap-8 p-6 md:p-8 md:flex md:border md:rounded-md'>
@@ -15,7 +15,11 @@ export default function ProductsPage() {
         </div>
         <div className='flex items-center gap-2'>{/* <UserNav /> */}</div>
       </div>
-      <ProductDataTable columns={productColumns} data={data} />
+      <ProductDataTable
+        columns={productColumns(fetchAllProducts, handleDeleteProduct)}
+        data={data}
+        onRefresh={fetchAllProducts}
+      />
     </div>
   );
 }
