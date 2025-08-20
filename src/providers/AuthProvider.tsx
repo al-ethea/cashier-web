@@ -50,16 +50,16 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token]);
 
-  useEffect(() => {
-    if (isHandleSessionLoginDone) {
-      const isPublicPath = ["/", "/login", "/register"].includes(pathName);
-      if (token && isPublicPath) {
-        router.push("/dashboard");
-      } else if (!token && !isPublicPath) {
-        router.push("/");
-      }
-    }
-  }, [isHandleSessionLoginDone, pathName]);
+  // useEffect(() => {
+  //   if (isHandleSessionLoginDone) {
+  //     const isPublicPath = ["/", "/login", "/register"].includes(pathName);
+  //     if (token && isPublicPath) {
+  //       router.push("/dashboard");
+  //     } else if (!token && !isPublicPath) {
+  //       router.push("/");
+  //     }
+  //   }
+  // }, [isHandleSessionLoginDone, pathName]);
 
   return <>{children}</>;
 }
