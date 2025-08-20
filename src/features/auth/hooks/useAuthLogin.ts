@@ -20,21 +20,43 @@ export default function useAuthLogin() {
     password,
   }: IHandleAuthLoginProps) => {
     try {
-      const response = await apiInstance.post("/auth/cashier-login", {
+      const response = await apiInstance.post("/auth/login", {
         email,
         password,
       });
-      console.log(response.data)
+      console.log(response.data);
+
+      const {
+        token,
+        role,
+        email: userEmail,
+        cashierId,
+        adminId,
+        shift,
+      } = response.data.data;
 
       toast.success(response.data.message);
-      setAuth({
-        token: response.data.data.token,
-        email: response.data.data.email,
-        // id: response.data.data.cashierId, mau pake id atau nggak?
-        shift: response.data.data.shift,
-      });
 
-      router.push("/dashboard");
+      // Save to store depending on role
+      if (role === "cashier") {
+        setAuth({
+          token,
+          role,
+          cashierId,
+          email: userEmail,
+          shift: shift || null,
+        });
+        router.push("/dashboard");
+      } else if (role === "admin") {
+        setAuth({
+          token,
+          role,
+          adminId,
+          email: userEmail,
+          shift: null, // not needed for admin
+        });
+        router.push("/admin/dashboard");
+      }
     } catch (error) {
       const errResponse = error as AxiosError<{ message: string }>;
       if (errResponse) {

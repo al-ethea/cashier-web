@@ -14,6 +14,37 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [isHandleSessionLoginDone, setIsHandleSessionLoginDone] =
     useState(false);
 
+  // const handleSessionLogin = async () => {
+  //   try {
+  //     const response = await apiInstance.get("/auth/session-login", {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log(response);
+
+  //     setAuth({
+  //       token: response.data.data.token,
+  //       id: response.data.data.cashierId || response.data.data.adminId,
+  //       email: response.data.data.email,
+  //       role: response.data.data.role,
+  //       shift: response.data.data.shift,
+  //     });
+  //     setIsHandleSessionLoginDone(true);
+  //     console.log("Session Login Success");
+  //   } catch (error) {
+  //     console.log("Session Login Failed");
+  //     setAuth({
+  //       token: null,
+  //       id: null,
+  //       email: null,
+  //       role: null,
+  //       shift: null,
+  //     });
+  //     setIsHandleSessionLoginDone(true);
+  //   }
+  // };
+
   const handleSessionLogin = async () => {
     try {
       const response = await apiInstance.get("/auth/session-login", {
@@ -21,21 +52,36 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
+
+      const {
+        token: newToken,
+        email,
+        shift,
+        role,
+        cashierId,
+        adminId,
+      } = response.data.data;
 
       setAuth({
-        token: response.data.data.token,
-        email: response.data.data.email,
-        shift: response.data.data.shift,
+        token: newToken,
+        email,
+        shift: shift || null,
+        role,
+        cashierId: cashierId || null,
+        adminId: adminId || null,
       });
+
       setIsHandleSessionLoginDone(true);
-      console.log("Session Login Success");
+      console.log("✅Session Login Success");
     } catch (error) {
-      console.log("Session Login Failed");
+      console.log("❌Session Login Failed");
       setAuth({
         token: null,
         email: null,
         shift: null,
+        role: null,
+        cashierId: null,
+        adminId: null,
       });
       setIsHandleSessionLoginDone(true);
     }
