@@ -1,7 +1,7 @@
 // pages/index.tsx
 "use client";
 import Link from "next/link";
-import useCashierDashboard from "@/features/cashier/hooks/useCashierDashboard";
+import useCashierDashboard from "@/features/cashier/dashboard/useCashierDashboard";
 import authStore from "@/zustand/authStore";
 import { useState } from "react";
 import apiInstance from "@/utils/api/apiInstance";

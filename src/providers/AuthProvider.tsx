@@ -96,16 +96,28 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token]);
 
-  // useEffect(() => {
-  //   if (isHandleSessionLoginDone) {
-  //     const isPublicPath = ["/", "/login", "/register"].includes(pathName);
-  //     if (token && isPublicPath) {
-  //       router.push("/dashboard");
-  //     } else if (!token && !isPublicPath) {
-  //       router.push("/");
-  //     }
-  //   }
-  // }, [isHandleSessionLoginDone, pathName]);
+  useEffect(() => {
+    if (isHandleSessionLoginDone) {
+      const isPublicPath = ["/", "/login", "/register"].includes(pathName);
+      const { cashierId, adminId, role } = authStore.getState();
+
+      // Not logged in or no valid user
+      if (!token || (!cashierId && !adminId)) {
+        if (!isPublicPath) {
+          router.push("/");
+        }
+      } else {
+        // Logged in users trying to access public pages
+        if (isPublicPath) {
+          if (cashierId) {
+            router.push("/dashboard");
+          } else if (adminId) {
+            router.push("/admin/dashboard");
+          }
+        }
+      }
+    }
+  }, [isHandleSessionLoginDone, pathName, token]);
 
   return <>{children}</>;
 }

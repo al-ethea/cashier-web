@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconBlocks,
   IconBubbleTea,
@@ -18,12 +18,12 @@ import {
   IconSettings,
   IconUserDollar,
   IconUsers,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavDocuments } from "@/components/nav-documents";
+import { NavMain } from "@/components/nav-main";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -32,116 +32,116 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
 
 const data = {
   user: {
-    name: 'Alethea',
-    email: 'Alethea@example.com',
-    avatar: '/avatars/shadcn.jpg',
+    name: "Alethea",
+    email: "Alethea@example.com",
+    avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
-      title: 'Dashboard',
-      url: '/admin/dashboard',
+      title: "Dashboard",
+      url: "/admin/dashboard",
       icon: IconDashboard,
     },
     {
-      title: 'Products',
-      url: '/admin/products',
+      title: "Products",
+      url: "/admin/products",
       icon: IconBubbleTea,
     },
     {
-      title: 'Cashiers',
-      url: '/admin/cashiers',
+      title: "Cashiers",
+      url: "/admin/cashiers",
       icon: IconUserDollar,
     },
     {
-      title: 'Reports',
-      url: '/admin/reports',
+      title: "Reports",
+      url: "/admin/reports",
       icon: IconReport,
     },
   ],
   navClouds: [
     {
-      title: 'Capture',
+      title: "Capture",
       icon: IconCamera,
       isActive: true,
-      url: '#',
+      url: "#",
       items: [
         {
-          title: 'Active Proposals',
-          url: '#',
+          title: "Active Proposals",
+          url: "#",
         },
         {
-          title: 'Archived',
-          url: '#',
+          title: "Archived",
+          url: "#",
         },
       ],
     },
     {
-      title: 'Proposal',
+      title: "Proposal",
       icon: IconFileDescription,
-      url: '#',
+      url: "#",
       items: [
         {
-          title: 'Active Proposals',
-          url: '#',
+          title: "Active Proposals",
+          url: "#",
         },
         {
-          title: 'Archived',
-          url: '#',
+          title: "Archived",
+          url: "#",
         },
       ],
     },
     {
-      title: 'Prompts',
+      title: "Prompts",
       icon: IconFileAi,
-      url: '#',
+      url: "#",
       items: [
         {
-          title: 'Active Proposals',
-          url: '#',
+          title: "Active Proposals",
+          url: "#",
         },
         {
-          title: 'Archived',
-          url: '#',
+          title: "Archived",
+          url: "#",
         },
       ],
     },
   ],
   navSecondary: [
     {
-      title: 'Settings',
-      url: '#',
+      title: "Settings",
+      url: "#",
       icon: IconSettings,
     },
     {
-      title: 'Get Help',
-      url: '#',
+      title: "Get Help",
+      url: "#",
       icon: IconHelp,
     },
     {
-      title: 'Search',
-      url: '#',
+      title: "Search",
+      url: "#",
       icon: IconSearch,
     },
   ],
   documents: [
     {
-      name: 'Data Library',
-      url: '#',
+      name: "Data Library",
+      url: "#",
       icon: IconDatabase,
     },
     {
-      name: 'Reports',
-      url: '#',
+      name: "Reports",
+      url: "#",
       icon: IconReport,
     },
     {
-      name: 'Word Assistant',
-      url: '#',
+      name: "Word Assistant",
+      url: "#",
       icon: IconFileWord,
     },
   ],
@@ -173,5 +173,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

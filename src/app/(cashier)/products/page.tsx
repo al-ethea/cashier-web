@@ -1,20 +1,30 @@
 "use client";
-import useAdminProducts from "@/features/admin/products/useAdminProducts";
-import { ProductDataTable } from "@/app/admin/products/components/data-table";
-import { productColumns } from "@/app/admin/products/components/columns";
-export default function ProductsPage() {
-  const { allProducts: data } = useAdminProducts();
+
+import * as React from "react";
+import useCashierProducts from "@/features/cashier/products/useCashierProducts";
+import { ProductDataTable } from "@/app/admin/products/components/product-data-table";
+import { cashierProductColumns } from "./components/cashier-product-columns";
+
+export default function CashierProductsPage() {
+  const { allProducts, fetchAllProducts, addToCart, loading } =
+    useCashierProducts();
 
   return (
     <div className="h-full flex-1 flex-col gap-8 p-6 md:p-8 md:flex md:border md:rounded-md">
       <div className="flex items-center justify-between gap-2">
         <div className="flex flex-col gap-1">
           <h2 className="text-2xl font-semibold tracking-tight">Products</h2>
-          <p className="text-muted-foreground">Products' List</p>
+          <p className="text-muted-foreground">
+            Select products to add to cart
+          </p>
         </div>
-        <div className="flex items-center gap-2">{/* <UserNav /> */}</div>
       </div>
-      <ProductDataTable columns={productColumns} data={data} />
+
+      <ProductDataTable
+        columns={cashierProductColumns(addToCart)}
+        data={allProducts}
+        onRefresh={fetchAllProducts}
+      />
     </div>
   );
 }
