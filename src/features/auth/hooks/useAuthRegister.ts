@@ -1,6 +1,6 @@
 import apiInstance from "@/utils/api/apiInstance";
 import authStore from "@/zustand/authStore";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -32,8 +32,10 @@ export default function useAuthRegister() {
         }
       );
       toast.success(response.data.message);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Register failed");
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+
+      toast.error(err.response?.data?.message || "Register failed");
     }
   };
   return { handleAuthRegister };

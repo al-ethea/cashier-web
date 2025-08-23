@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import useCashierProducts from "@/features/cashier/products/useCashierProducts";
+import useCashierProducts from "@/features/cashier/products/hooks/useCashierProducts";
 import { ProductDataTable } from "@/app/admin/products/components/product-data-table";
 import { cashierProductColumns } from "./components/cashier-product-columns";
 
