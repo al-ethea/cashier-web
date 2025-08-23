@@ -18,7 +18,7 @@ export const cashierProductColumns = (
       new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
-        maximumFractionDigits: 0, // no decimals for Rupiah
+        maximumFractionDigits: 0,
       }).format(row.original.price),
   },
   {
