@@ -17,7 +17,8 @@ interface Props {
     productId: string,
     action: "decrease"
   ) => void;
-  onRefresh?: () => void; // ✅ add this back
+  onRefresh?: () => void;
+  onCheckout?: () => void;
 }
 
 export default function CashierCartTable({
@@ -26,6 +27,7 @@ export default function CashierCartTable({
   onIncrease,
   onDecrease,
   onRefresh,
+  onCheckout,
 }: Props) {
   const total = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -132,11 +134,11 @@ export default function CashierCartTable({
         </h3>
         <Button
           size="lg"
-          className="ml-auto"
-          // onClick={onCheckout}
+          className="ml-auto text-xl"
+          onClick={onCheckout}
           disabled={items.length === 0}
         >
-          Proceed to Transaction
+          Checkout
         </Button>
       </div>
     </div>
