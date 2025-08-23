@@ -7,7 +7,6 @@ import { useRouter, usePathname } from "next/navigation";
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const token = authStore((state: any) => state.token);
-  console.log(token);
   const setAuth = authStore((state: any) => state.setAuth);
   const router = useRouter();
   const pathName = usePathname();

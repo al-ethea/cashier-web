@@ -10,86 +10,89 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { DataTablePagination } from '@/components/pagination/data-table-pagination';
-import { Input } from '@/components/ui/input';
-import { AddCashierModal } from './add-cashier-modal';
-
-
-interface ICashierDataTableProps<TData, TValue> {
+import { DataTablePagination } from '../../../../components/pagination/data-table-pagination';
+import {  ITransactionReportItemsDaily } from '@/types/report.type';
+import { SelectFilter } from '../../../../components/filter-tools/select-filter';
+import { EShiftSession } from '@/types/cashier.type';
+import SearchFilter from '../../../../components/filter-tools/search-filter';
+import { SingleDatePicker } from '../../../../components/filter-tools/single-date-picker';
+interface ITransactionReportTableProps<TData extends ITransactionReportItemsDaily, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filteringType?: 'frontend' | 'backend';
-  onRefresh?: () => void;
-  onDelete?: (id: string, password?: string) => void;
-  totalItems: number;
-  currentPageNumber: number;
+  searchValue?: string;
+  onSearchFilterChange?: (value: string) => void;
+  dateFilterValue?: Date | undefined;
+  onDateFilterChange?: (value: Date | undefined) => void;
+  columnFilters?: Record<string, string>;
+  searchableColumns?: string[];
+  onColumnFilterChange?: (columnId: string, value: string) => void;
+  totalItems?: number;
+  currentPageNumber?: number;
   onPageChange: (page: number) => void;
-  pageSizeVariants: number[];
-  pageSize: number;
+  pageSizeVariants?: number[];
+  pageSize?: number;
   onPageSizeChange: (pageSize: number) => void;
-  searchValue: string;
-  onSearchFilterChange: (value: string) => void;
-  searchableColumns: string[];
 }
 
-export function CashierDataTable<TData, TValue>({
+export function DailyItemsReportsDataTable<TData extends ITransactionReportItemsDaily, TValue>({
   columns,
   data,
-  filteringType,
-  onRefresh,
+  filteringType = 'frontend',
+  dateFilterValue,
+  onDateFilterChange,
+  columnFilters = {},
   totalItems,
   currentPageNumber,
   onPageChange,
   pageSizeVariants,
   pageSize,
   onPageSizeChange,
-  searchValue,
-  onSearchFilterChange,
-  searchableColumns,
-}: ICashierDataTableProps<TData, TValue>) {
+}: ITransactionReportTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const tableConfig: any = {
+  const [tableColumnFilters, setTableColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState('');
+
+  React.useEffect(() => {
+    const filters = Object.entries(columnFilters)
+      .filter(([_, value]) => value !== '')
+      .map(([id, value]) => ({ id, value }));
+    setTableColumnFilters(filters); // Filter out empty values
+  }, [columnFilters]);
+
+  const reportsTable = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: filteringType === 'frontend' ? getFilteredRowModel() : undefined,
+    getPaginationRowModel: getPaginationRowModel(),
     enableRowSelection: true,
+    enableGlobalFilter: true,
     onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: filteringType === 'frontend' ? setTableColumnFilters : undefined,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       rowSelection,
-      columnFilters,
+      columnFilters: filteringType === 'frontend' ? tableColumnFilters : [],
+      globalFilter,
     },
-  };
-
-  if (filteringType === 'frontend') {
-    tableConfig.getFilteredRowModel = getFilteredRowModel();
-    tableConfig.getPaginationRowModel = getPaginationRowModel();
-  }
-
-  const cashierTable = useReactTable(tableConfig);
+  });
 
   return (
     <div>
-      <div className='md:flex justify-between items-center py-4'>
-        <div>
-        <Input
-          placeholder='Filter cashier name...'
-          value={searchValue}
-          onChange={(event) => onSearchFilterChange(event.target.value)}
-          className='max-w-sm'
+      <div className='md:flex items-center gap-2 py-4'>
+        <SingleDatePicker
+          placeholder='Transaction Date'
+          date={dateFilterValue}
+          disabledFn={(date) => date > new Date() || date < new Date('2025-08-05')}
+          onSelectDate={onDateFilterChange}
         />
-
-        </div>
-        <div className='flex flex-wrap items-center mt-2 gap-2 md:flex-row'>
-          <AddCashierModal onRefresh={onRefresh}/>
-        </div>
       </div>
       <div className='overflow-hidden rounded-md border'>
         <div className='overflow-x-auto'>
           <Table className='min-w-full'>
           <TableHeader>
-            {cashierTable.getHeaderGroups().map((headerGroup) => (
+            {reportsTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -107,8 +110,8 @@ export function CashierDataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {cashierTable.getRowModel().rows?.length ? (
-              cashierTable.getRowModel().rows.map((row) => (
+            {reportsTable.getRowModel().rows?.length ? (
+              reportsTable.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -124,10 +127,7 @@ export function CashierDataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                  >
+                <TableCell colSpan={columns.length} className='h-24 text-center'>
                   No results.
                 </TableCell>
               </TableRow>
@@ -136,8 +136,8 @@ export function CashierDataTable<TData, TValue>({
         </Table>
         </div>
         <DataTablePagination
-          table={cashierTable}
-          filteringType={filteringType}
+          table={reportsTable}
+          filteringType='backend'
           totalItems={totalItems}
           currentPageNumber={currentPageNumber}
           onPageChange={onPageChange}

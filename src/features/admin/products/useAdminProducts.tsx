@@ -1,42 +1,69 @@
+import useAllProductCategories from "@/hooks/admin/useAllProductCategories";
+import useAllProducts from "@/hooks/admin/useAllProducts";
+import usePagination from "@/hooks/filter-tools/usePagination";
+import useSearchFilter from "@/hooks/filter-tools/useSearchFilter";
+
 import { IProduct } from "@/types/product.type";
 import apiInstance from "@/utils/api/apiInstance";
 import { axiosErrorResponse } from "@/utils/axios-error/axiosErrorResponse";
+import urlParamsSanitization from "@/utils/urlParamsSanitization";
 import { AxiosError } from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { toast } from "react-toastify";
 
 export default function useAdminProducts() {
+  const searchRouter = useRouter();
+  const searchParams = useSearchParams();
   // Filter dropdown
-  const [filterDropdownOpen, setFilterDropdownOpen] = React.useState(false);
 
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
-  const [allProducts, setAllProducts] = React.useState([]);
-  const fetchAllProducts = async () => {
-    try {
-      const response = await apiInstance.get("/products/all");
-      setAllProducts(response.data.products);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const sanitizedParams = React.useMemo(
+    () =>
+      urlParamsSanitization(searchParams, [
+        "page",
+        "limit",
+        "search_name",
+        "category",
+      ]),
+    [searchParams.toString()]
+  );
 
-  React.useEffect(() => {
-    fetchAllProducts();
-  }, []);
+  const { allProducts, totalItems, fetchAllProducts, isLoading } =
+    useAllProducts(sanitizedParams);
 
-  const [categories, setCategories] = React.useState([]);
-  const fetchCategories = async () => {
-    try {
-      const response = await apiInstance.get("/products/categories");
-      setCategories(response.data.categories);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  React.useEffect(() => {
-    fetchCategories();
-  }, []);
+  const { categories } = useAllProductCategories();
+
+  const {
+    columnsSearchKey,
+    columnsToSearch,
+    searchFilterValue,
+    setSearchFilterValue,
+    handleSearchFilterChange,
+  } = useSearchFilter({
+    searchRouter,
+    searchParams,
+    columnsToSearch: ["name"],
+  });
+
+  const {
+    pageNumberKey,
+    pageSizeKey,
+    pageSizeVariants,
+    pageNumber,
+    pageSize,
+    setPageNumber,
+    setPageSize,
+    handlePageChange,
+    handleNewPageSizeChange,
+  } = usePagination({
+    searchRouter,
+    searchParams,
+    defaultPageKey: "page",
+    defaultPageSizeKey: "limit",
+    pageSizeVariants: [10, 20, 30, 40, 50],
+  });
 
   const [editProductDialogOpen, setEditProductDialogOpen] =
     React.useState(false);
@@ -67,20 +94,30 @@ export default function useAdminProducts() {
   };
 
   return {
-    filterDropdownOpen,
     dialogOpen,
     setDialogOpen,
     allProducts,
-    setAllProducts,
+    totalItems,
     fetchAllProducts,
+    isLoading,
     categories,
-    setCategories,
-    fetchCategories,
     editProductDialogOpen,
     setEditProductDialogOpen,
     currentProduct,
     setCurrentProduct,
     fetchProductById,
     handleDeleteProduct,
+    pageNumberKey,
+    pageSizeKey,
+    pageSizeVariants,
+    pageNumber,
+    pageSize,
+    setPageNumber,
+    setPageSize,
+    handlePageChange,
+    handleNewPageSizeChange,
+    searchFilterValue,
+    handleSearchFilterChange,
+    columnsToSearch,
   };
 }

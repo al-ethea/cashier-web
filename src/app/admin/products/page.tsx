@@ -2,9 +2,30 @@
 import useAdminProducts from '@/features/admin/products/useAdminProducts';
 import { productColumns } from './components/product-columns';
 import { ProductDataTable } from './components/product-data-table';
+import React from 'react';
 
 export default function ProductsPage() {
-  const { allProducts: data, fetchAllProducts, handleDeleteProduct } = useAdminProducts();
+  const {
+    allProducts: data,
+    totalItems,
+    fetchAllProducts,
+    handleDeleteProduct,
+    pageSizeVariants,
+    pageNumber,
+    pageSize,
+    handlePageChange,
+    handleNewPageSizeChange,
+    isLoading,
+    searchFilterValue,
+    handleSearchFilterChange,
+    columnsToSearch,
+  } = useAdminProducts();
+
+  const memoColumns = React.useMemo(
+    () => productColumns(fetchAllProducts, handleDeleteProduct),
+    [fetchAllProducts, handleDeleteProduct]
+  );
+  const memoData = React.useMemo(() => data, [data]);
 
   return (
     <div className='h-full flex-1 flex-col gap-8 p-6 md:p-8 md:flex md:border md:rounded-md'>
@@ -15,11 +36,27 @@ export default function ProductsPage() {
         </div>
         <div className='flex items-center gap-2'>{/* <UserNav /> */}</div>
       </div>
+      {isLoading ? (
+        <div className='flex items-center justify-center h-64'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900'></div>
+        </div>
+      ) : (
       <ProductDataTable
-        columns={productColumns(fetchAllProducts, handleDeleteProduct)}
-        data={data}
+          columns={memoColumns}
+          data={memoData}
+          filteringType='backend'
         onRefresh={fetchAllProducts}
+          totalItems={totalItems}
+          currentPageNumber={pageNumber}
+          onPageChange={handlePageChange}
+          pageSizeVariants={pageSizeVariants}
+          pageSize={pageSize}
+          onPageSizeChange={handleNewPageSizeChange}
+          searchValue={searchFilterValue}
+          onSearchFilterChange={handleSearchFilterChange}
+          searchableColumns={columnsToSearch}
       />
+      )}
     </div>
   );
 }

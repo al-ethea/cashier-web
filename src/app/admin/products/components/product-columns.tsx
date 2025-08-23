@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { EditCashierModal } from '../../cashiers/components/edit-cashier-modal';
 import { EditProductModal } from './edit-product-modal';
 import DeleteModal from '@/components/delete-modal';
+import { ProductImageCell } from '@/components/product-image-cell';
 
 
 export const productColumns=(onRefresh?: () => void, onDelete?:(id:string,password?:string)=>void): ColumnDef<IProduct>[] => [
@@ -37,14 +38,12 @@ export const productColumns=(onRefresh?: () => void, onDelete?:(id:string,passwo
     cell: ({ row }) => {
       return (
         <div className='flex items-center gap-3'>
-          <Image
-            src={row.original.productImgUrl || '/placeholder.png'}
+          <ProductImageCell
+            src={row.original.productImgUrl}
             alt={row.original.name}
-            width={50}
-            height={50}
             className='rounded-md object-cover'
           />
-          <div className='font-medium break-words' >{row.original.name}</div>
+          <div className='font-medium break-words'>{row.original.name}</div>
         </div>
       );
     },
