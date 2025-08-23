@@ -10,7 +10,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { DataTablePagination } from './cashier-data-table-pagination';
+import { DataTablePagination } from '@/components/pagination/data-table-pagination';
 import { Input } from '@/components/ui/input';
 import { AddCashierModal } from './add-cashier-modal';
 
@@ -18,19 +18,41 @@ import { AddCashierModal } from './add-cashier-modal';
 interface ICashierDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  filteringType?: 'frontend' | 'backend';
   onRefresh?: () => void;
-  onDelete?:(id:string,password?:string)=>void
+  onDelete?: (id: string, password?: string) => void;
+  totalItems: number;
+  currentPageNumber: number;
+  onPageChange: (page: number) => void;
+  pageSizeVariants: number[];
+  pageSize: number;
+  onPageSizeChange: (pageSize: number) => void;
+  searchValue: string;
+  onSearchFilterChange: (value: string) => void;
+  searchableColumns: string[];
 }
 
-export function CashierDataTable<TData, TValue>({ columns, data , onRefresh}: ICashierDataTableProps<TData, TValue>) {
+export function CashierDataTable<TData, TValue>({
+  columns,
+  data,
+  filteringType,
+  onRefresh,
+  totalItems,
+  currentPageNumber,
+  onPageChange,
+  pageSizeVariants,
+  pageSize,
+  onPageSizeChange,
+  searchValue,
+  onSearchFilterChange,
+  searchableColumns,
+}: ICashierDataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const productTable = useReactTable({
+  const tableConfig: any = {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
@@ -38,16 +60,23 @@ export function CashierDataTable<TData, TValue>({ columns, data , onRefresh}: IC
       rowSelection,
       columnFilters,
     },
-  });
+  };
+
+  if (filteringType === 'frontend') {
+    tableConfig.getFilteredRowModel = getFilteredRowModel();
+    tableConfig.getPaginationRowModel = getPaginationRowModel();
+  }
+
+  const cashierTable = useReactTable(tableConfig);
 
   return (
     <div>
       <div className='md:flex justify-between items-center py-4'>
         <div>
         <Input
-          placeholder='Filter product name...'
-          value={(productTable.getColumn('cashier')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => productTable.getColumn('cashier')?.setFilterValue(event.target.value)}
+          placeholder='Filter cashier name...'
+          value={searchValue}
+          onChange={(event) => onSearchFilterChange(event.target.value)}
           className='max-w-sm'
         />
 
@@ -57,17 +86,18 @@ export function CashierDataTable<TData, TValue>({ columns, data , onRefresh}: IC
         </div>
       </div>
       <div className='overflow-hidden rounded-md border'>
-        <Table>
+        <div className='overflow-x-auto'>
+          <Table className='min-w-full'>
           <TableHeader>
-            {productTable.getHeaderGroups().map((headerGroup) => (
+            {cashierTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
+                      className='whitespace-nowrap px-4'
                       style={{
-                        minWidth: header.column.columnDef.size,
-                        maxWidth: header.column.columnDef.size,
+                        minWidth: header.column.columnDef.size || 120,
                       }}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
@@ -77,15 +107,15 @@ export function CashierDataTable<TData, TValue>({ columns, data , onRefresh}: IC
             ))}
           </TableHeader>
           <TableBody>
-            {productTable.getRowModel().rows?.length ? (
-              productTable.getRowModel().rows.map((row) => (
+            {cashierTable.getRowModel().rows?.length ? (
+              cashierTable.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
+                      className='whitespace-nowrap px-4'
                       style={{
-                        minWidth: cell.column.columnDef.size,
-                        maxWidth: cell.column.columnDef.size,
+                        minWidth: cell.column.columnDef.size || 120,
                       }}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -104,7 +134,17 @@ export function CashierDataTable<TData, TValue>({ columns, data , onRefresh}: IC
             )}
           </TableBody>
         </Table>
-        <DataTablePagination table={productTable} />
+        </div>
+        <DataTablePagination
+          table={cashierTable}
+          filteringType={filteringType}
+          totalItems={totalItems}
+          currentPageNumber={currentPageNumber}
+          onPageChange={onPageChange}
+          pageSizeVariants={pageSizeVariants}
+          pageSize={pageSize}
+          onPageSizeChange={onPageSizeChange}
+        />
       </div>
     </div>
   );
