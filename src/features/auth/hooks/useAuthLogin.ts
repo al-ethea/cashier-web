@@ -4,11 +4,7 @@ import { useRouter } from "next/navigation";
 import authStore from "@/zustand/authStore";
 import { AxiosError } from "axios";
 import { useState } from "react";
-
-interface IHandleAuthLoginProps {
-  email: string;
-  password: string;
-}
+import { IHandleAuthLoginProps } from "@/types/auth.type";
 
 export default function useAuthLogin() {
   const [showPassword, setShowPassword] = useState(false);

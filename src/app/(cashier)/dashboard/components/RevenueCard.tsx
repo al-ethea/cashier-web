@@ -1,10 +1,8 @@
 "use client";
 
-interface RevenueCardProps {
-  totalRevenue: number;
-}
+import { IRevenueCardProps } from "@/types/cashier.type";
 
-export default function RevenueCard({ totalRevenue }: RevenueCardProps) {
+export default function RevenueCard({ totalRevenue }: IRevenueCardProps) {
   return (
     <div className="mt-6 bg-white shadow-md rounded-xl p-6 border border-gray-100 flex items-center justify-between">
       <p className="text-gray-600 text-lg font-medium">Total Revenue</p>

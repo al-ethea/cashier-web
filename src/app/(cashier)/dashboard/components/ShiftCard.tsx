@@ -1,12 +1,6 @@
 "use client";
 
-interface ShiftCardProps {
-  shift: string;
-  startTime: string;
-  endTime: string;
-  openClockInModal: () => void;
-  openClockOutModal: () => void;
-}
+import { IShiftCardProps } from "@/types/cashier.type";
 
 export default function ShiftCard({
   shift,
@@ -14,7 +8,7 @@ export default function ShiftCard({
   endTime,
   openClockInModal,
   openClockOutModal,
-}: ShiftCardProps) {
+}: IShiftCardProps) {
   return (
     <div className="bg-white shadow-md rounded-xl p-6 border border-gray-100">
       <p className="text-xl font-medium text-gray-800 mb-2">

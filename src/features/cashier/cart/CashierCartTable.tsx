@@ -1,25 +1,7 @@
 // features/cashier/cart/CashierCartTable.tsx
 "use client";
-
-import { ICartItem } from "@/types/cart.type";
 import { Button } from "@/components/ui/button";
-
-interface Props {
-  items: ICartItem[];
-  onRemove?: (cartItemId: string) => void;
-  onIncrease?: (
-    cartItemId: string,
-    productId: string,
-    action: "increase"
-  ) => void;
-  onDecrease?: (
-    cartItemId: string,
-    productId: string,
-    action: "decrease"
-  ) => void;
-  onRefresh?: () => void;
-  onCheckout?: () => void;
-}
+import { ICashierCartTable } from "@/types/cashier.type";
 
 export default function CashierCartTable({
   items,
@@ -28,7 +10,7 @@ export default function CashierCartTable({
   onDecrease,
   onRefresh,
   onCheckout,
-}: Props) {
+}: ICashierCartTable) {
   const total = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0

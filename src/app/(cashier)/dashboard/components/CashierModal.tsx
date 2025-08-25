@@ -1,20 +1,7 @@
 "use client";
 import React from "react";
 import clsx from "clsx";
-
-interface CashierModalProps {
-  id: string;
-  title: string;
-  description: string;
-  value: string | number;
-  placeholder: string;
-  onChange: (val: string) => void;
-  onConfirm: () => void;
-  onCancel: () => void;
-  isSubmitting: boolean;
-  confirmText?: string;
-  confirmColor?: "green" | "red";
-}
+import { ICashierModalProps } from "@/types/cashier.type";
 
 export default function CashierModal({
   id,
@@ -28,7 +15,7 @@ export default function CashierModal({
   isSubmitting,
   confirmText = "Confirm",
   confirmColor = "green",
-}: CashierModalProps) {
+}: ICashierModalProps) {
   return (
     <dialog id={id} className="modal">
       <div className="modal-box max-w-sm rounded-2xl bg-white shadow-lg p-6">
