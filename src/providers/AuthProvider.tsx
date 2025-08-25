@@ -97,22 +97,34 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (isHandleSessionLoginDone) {
-      const isPublicPath = ["/", "/login", "/register"].includes(pathName);
-      const { cashierId, adminId, role } = authStore.getState();
+      const isPublicPath = [
+        "/",
+        "/login",
+        "/admin/login",
+        "/register",
+      ].includes(pathName);
+      const { cashierId, adminId } = authStore.getState();
 
       // Not logged in or no valid user
       if (!token || (!cashierId && !adminId)) {
         if (!isPublicPath) {
           router.push("/");
         }
-      } else {
-        // Logged in users trying to access public pages
+      } else if (cashierId) {
+        if (pathName.startsWith("/admin")) {
+          // Cashier trying to access admin page → redirect
+          router.push("/dashboard");
+        }
         if (isPublicPath) {
-          if (cashierId) {
-            router.push("/dashboard");
-          } else if (adminId) {
-            router.push("/admin/dashboard");
-          }
+          router.push("/dashboard");
+        }
+      } else if (adminId) {
+        if (!pathName.startsWith("/admin") && !isPublicPath) {
+          // Admin trying to access cashier page → redirect
+          router.push("/admin/dashboard");
+        }
+        if (isPublicPath) {
+          router.push("/admin/dashboard");
         }
       }
     }
