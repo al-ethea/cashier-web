@@ -9,6 +9,7 @@ interface ShiftData {
   shift: string;
   startTime: string;
   endTime: string;
+  totalRevenue: number;
 }
 
 export default function useCashierDashboard() {

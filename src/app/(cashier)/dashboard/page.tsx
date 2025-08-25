@@ -1,8 +1,9 @@
 // pages/index.tsx
 "use client";
-import Link from "next/link";
 import useCashierDashboard from "@/features/cashier/dashboard/hooks/useCashierDashboard";
 import CashierModal from "./components/CashierModal";
+import ShiftCard from "./components/ShiftCard";
+import RevenueCard from "./components/RevenueCard";
 
 export default function CashierDashboard() {
   const {
@@ -24,13 +25,11 @@ export default function CashierDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Main content */}
       <main className="flex-1 p-10">
         {loading ? (
           <p className="text-gray-500">Loading shift...</p>
         ) : shiftData ? (
           <div>
-            {/* Welcome Message */}
             <h2 className="text-3xl font-semibold text-gray-800 mb-2">
               Welcome,{" "}
               <span className="text-[#00af81]">{shiftData.cashierName}</span>
@@ -40,31 +39,16 @@ export default function CashierDashboard() {
             </p>
 
             {/* Shift Card */}
-            <div className="bg-white shadow-md rounded-xl p-6 border border-gray-100">
-              <p className="text-xl font-medium text-gray-800 mb-2">
-                Shift: <span className="text-[#00af81]">{shiftData.shift}</span>
-              </p>
-              <p className="text-gray-600">
-                {shiftData.startTime} - {shiftData.endTime}
-              </p>
+            <ShiftCard
+              shift={shiftData.shift}
+              startTime={shiftData.startTime}
+              endTime={shiftData.endTime}
+              openClockInModal={openClockInModal}
+              openClockOutModal={openClockOutModal}
+            />
 
-              {/* Clock In/Out Buttons */}
-              <div className="flex space-x-4 mt-3">
-                <button
-                  onClick={openClockInModal}
-                  className="px-4 py-2 rounded-lg transition bg-green-500 text-white hover:bg-green-600"
-                >
-                  Clock In
-                </button>
-
-                <button
-                  onClick={openClockOutModal}
-                  className="px-4 py-2 rounded-lg transition bg-red-500 text-white hover:bg-red-600"
-                >
-                  Clock Out
-                </button>
-              </div>
-            </div>
+            {/* Revenue Card */}
+            <RevenueCard totalRevenue={shiftData.totalRevenue ?? 0} />
           </div>
         ) : (
           <p className="text-gray-500">No shift information available.</p>
