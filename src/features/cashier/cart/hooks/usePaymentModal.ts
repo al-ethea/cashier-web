@@ -37,7 +37,7 @@ export default function usePaymentModal({
       }
 
       const response = await apiInstance.post(
-        `/transaction/${cartId}/create`,
+        `/transactions/${cartId}/create`,
         body,
         {
           headers: {

@@ -1,55 +1,44 @@
-import { useEffect, useState } from "react";
-import { useCashierDashboardNavItems } from "./useCashierDashboardNavItems";
+import { useEffect, useState, useMemo } from "react";
 import authStore from "@/zustand/authStore";
 import apiInstance from "@/utils/api/apiInstance";
 import { toast } from "react-toastify";
+import { AxiosError } from "axios";
 
 interface ShiftData {
   cashierName: string;
   shift: string;
   startTime: string;
   endTime: string;
-  clockOutDone: boolean;
 }
 
 export default function useCashierDashboard() {
-  const navItems = useCashierDashboardNavItems();
   const [shiftData, setShiftData] = useState<ShiftData | null>(null);
   const [loading, setLoading] = useState(true);
   const token = authStore((state) => state.token);
 
-  const [isClockingIn, setIsClockingIn] = useState(false);
   const [startingCash, setStartingCash] = useState("");
   const [endingCash, setEndingCash] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmittingClockOut, setIsSubmittingClockOut] = useState(false);
 
   const openClockInModal = () => {
-    const modal = document.getElementById(
-      "clock_in_modal"
-    ) as HTMLDialogElement;
-    modal?.showModal();
+    (
+      document.getElementById("clock_in_modal") as HTMLDialogElement
+    )?.showModal();
   };
 
   const closeClockInModal = () => {
-    const modal = document.getElementById(
-      "clock_in_modal"
-    ) as HTMLDialogElement;
-    modal?.close();
+    (document.getElementById("clock_in_modal") as HTMLDialogElement)?.close();
   };
 
   const openClockOutModal = () => {
-    const modal = document.getElementById(
-      "clock_out_modal"
-    ) as HTMLDialogElement;
-    modal?.showModal();
+    (
+      document.getElementById("clock_out_modal") as HTMLDialogElement
+    )?.showModal();
   };
 
   const closeClockOutModal = () => {
-    const modal = document.getElementById(
-      "clock_out_modal"
-    ) as HTMLDialogElement;
-    modal?.close();
+    (document.getElementById("clock_out_modal") as HTMLDialogElement)?.close();
   };
 
   const handleClockIn = async () => {
@@ -58,17 +47,15 @@ export default function useCashierDashboard() {
       await apiInstance.post(
         "/shift/clockIn",
         { startingCash: Number(startingCash) },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("You are clocked in!");
       closeClockInModal();
       setStartingCash("");
+      fetchShift(); // refresh state
     } catch (error) {
-      toast.error("Failed to clock in");
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err.response?.data?.message || "Failed to clock in");
     } finally {
       setIsSubmitting(false);
     }
@@ -79,42 +66,39 @@ export default function useCashierDashboard() {
       setIsSubmittingClockOut(true);
       await apiInstance.post(
         "/shift/clockOut",
-        {
-          endingCash: Number(endingCash),
-        },
+        { endingCash: Number(endingCash) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("You are clocked out!");
       closeClockOutModal();
       setEndingCash("");
+      fetchShift(); // refresh state
     } catch (error) {
-      toast.error("Failed to clock out");
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err.response?.data?.message || "Failed to clock out");
     } finally {
       setIsSubmittingClockOut(false);
     }
   };
 
-  useEffect(() => {
-    const fetchShift = async () => {
-      try {
-        const res = await apiInstance.get("/shift/display", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setShiftData(res.data.data);
-      } catch (error) {
-        console.error("Error fetching shift:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchShift = async () => {
+    try {
+      const res = await apiInstance.get("/shift/display", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setShiftData(res.data.data);
+    } catch (error) {
+      console.error("Error fetching shift:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchShift();
-  }, []);
+  useEffect(() => {
+    if (token) fetchShift();
+  }, [token]);
 
   return {
-    navItems,
     shiftData,
     loading,
     openClockInModal,

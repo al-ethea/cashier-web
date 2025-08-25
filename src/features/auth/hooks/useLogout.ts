@@ -6,7 +6,7 @@ export default function useAuthLogout() {
   const router = useRouter();
 
   const handleLogout = () => {
-    setAuth({ _token: null, email: null, role: null });
+    setAuth({ token: null, email: null, role: null });
     router.push("/");
   };
 
